@@ -8,7 +8,7 @@ namespace IrcDotNet
     // Utilities for IRC.
     internal static class IrcUtilities
     {
-        private static readonly Regex ValidTagKeyRegex = new Regex(@"^\+?(?:[\w.-]+/)?[\w-]+$");
+        private static readonly Regex ValidTagKeyRegex = new(@"^\+?(?:[\w.-]+/)?[\w-]+$");
 
         // Updates collection of modes from specified mode string.
         // Mode string is of form `( "+" | "-" ) ( mode character )+`.

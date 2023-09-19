@@ -71,7 +71,7 @@ namespace IrcDotNet
             internal set
             {
                 isOnline = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsOnline"));
+                OnPropertyChanged(new("IsOnline"));
             }
         }
 
@@ -85,8 +85,8 @@ namespace IrcDotNet
             internal set
             {
                 nickName = value;
-                OnNickNameChanged(new EventArgs());
-                OnPropertyChanged(new PropertyChangedEventArgs("NickName"));
+                OnNickNameChanged(new());
+                OnPropertyChanged(new("NickName"));
             }
         }
 
@@ -100,7 +100,7 @@ namespace IrcDotNet
             internal set
             {
                 userName = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("UserName"));
+                OnPropertyChanged(new("UserName"));
             }
         }
 
@@ -114,7 +114,7 @@ namespace IrcDotNet
             internal set
             {
                 realName = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("RealName"));
+                OnPropertyChanged(new("RealName"));
             }
         }
 
@@ -128,7 +128,7 @@ namespace IrcDotNet
             internal set
             {
                 hostName = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("HostName"));
+                OnPropertyChanged(new("HostName"));
             }
         }
 
@@ -142,7 +142,7 @@ namespace IrcDotNet
             internal set
             {
                 serverName = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ServerName"));
+                OnPropertyChanged(new("ServerName"));
             }
         }
 
@@ -156,7 +156,7 @@ namespace IrcDotNet
             internal set
             {
                 serverInfo = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("ServerInfo"));
+                OnPropertyChanged(new("ServerInfo"));
             }
         }
 
@@ -170,7 +170,7 @@ namespace IrcDotNet
             internal set
             {
                 isOperator = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IsOperator"));
+                OnPropertyChanged(new("IsOperator"));
             }
         }
 
@@ -189,8 +189,8 @@ namespace IrcDotNet
             internal set
             {
                 isAway = value;
-                OnIsAwayChanged(new EventArgs());
-                OnPropertyChanged(new PropertyChangedEventArgs("IsAway"));
+                OnIsAwayChanged(new());
+                OnPropertyChanged(new("IsAway"));
             }
         }
 
@@ -204,7 +204,7 @@ namespace IrcDotNet
             internal set
             {
                 awayMessage = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("AwayMessage"));
+                OnPropertyChanged(new("AwayMessage"));
             }
         }
 
@@ -218,7 +218,7 @@ namespace IrcDotNet
             internal set
             {
                 idleDuration = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("IdleDuration"));
+                OnPropertyChanged(new("IdleDuration"));
             }
         }
 
@@ -233,7 +233,7 @@ namespace IrcDotNet
             internal set
             {
                 hopCount = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("HopCount"));
+                OnPropertyChanged(new("HopCount"));
             }
         }
 
@@ -247,7 +247,7 @@ namespace IrcDotNet
             internal set
             {
                 client = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Client"));
+                OnPropertyChanged(new("Client"));
             }
         }
 
@@ -339,14 +339,14 @@ namespace IrcDotNet
 
         internal void HandleInviteReceived(IrcMessage ircMessage, IrcUser inviter, IrcChannel channel)
         {
-            OnInviteReceived(new IrcChannelInvitationEventArgs(ircMessage, channel, inviter));
+            OnInviteReceived(new(ircMessage, channel, inviter));
         }
 
         internal void HandleQuit(IrcMessage ircMessage, string comment)
         {
             foreach (var cu in GetChannelUsers().ToArray())
                 cu.Channel.HandleUserQuit(cu, comment);
-            OnQuit(new IrcCommentEventArgs(ircMessage, comment));
+            OnQuit(new(ircMessage, comment));
         }
 
         /// <summary>
@@ -356,8 +356,7 @@ namespace IrcDotNet
         protected virtual void OnNickNameChanged(EventArgs e)
         {
             var handler = NickNameChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -367,8 +366,7 @@ namespace IrcDotNet
         protected virtual void OnIsAwayChanged(EventArgs e)
         {
             var handler = IsAwayChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -378,8 +376,7 @@ namespace IrcDotNet
         protected virtual void OnInviteReceived(IrcChannelInvitationEventArgs e)
         {
             var handler = InviteReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -389,8 +386,7 @@ namespace IrcDotNet
         protected virtual void OnQuit(IrcCommentEventArgs e)
         {
             var handler = Quit;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -400,8 +396,7 @@ namespace IrcDotNet
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             var handler = PropertyChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>

@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <VersionPrefix>0.6</VersionPrefix>
-    <TargetFrameworks>netstandard1.5</TargetFrameworks>
     <AssemblyName>IrcDotNet.Samples.Common</AssemblyName>
     <PackageId>IrcDotNet.Samples.Common</PackageId>
     <PackageTags>communication;irc;networking;ctcp</PackageTags>
@@ -18,6 +17,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

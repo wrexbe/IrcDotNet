@@ -24,8 +24,8 @@ namespace IrcDotNet
         {
             User = user;
 
-            this.modes = new HashSet<char>();
-            Modes = new ReadOnlySet<char>(this.modes);
+            this.modes = new();
+            Modes = new(this.modes);
             if (modes != null)
                 this.modes.AddRange(modes);
         }
@@ -46,7 +46,7 @@ namespace IrcDotNet
             internal set
             {
                 channel = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Channel"));
+                OnPropertyChanged(new("Channel"));
             }
         }
 
@@ -117,7 +117,7 @@ namespace IrcDotNet
                     modes.Remove(mode);
             }
 
-            OnModesChanged(new EventArgs());
+            OnModesChanged(new());
         }
 
         /// <summary>
@@ -127,8 +127,7 @@ namespace IrcDotNet
         protected virtual void OnModesChanged(EventArgs e)
         {
             var handler = ModesChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -138,8 +137,7 @@ namespace IrcDotNet
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             var handler = PropertyChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>

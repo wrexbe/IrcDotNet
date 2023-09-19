@@ -19,7 +19,7 @@ namespace IrcDotNet.Ctcp
             {
                 var text = message.Data;
 
-                OnActionReceived(new CtcpMessageEventArgs(message.Source, message.Targets, text));
+                OnActionReceived(new(message.Source, message.Targets, text));
             }
         }
 
@@ -34,7 +34,7 @@ namespace IrcDotNet.Ctcp
             {
                 var dateTime = message.Data;
 
-                OnTimeResponseReceived(new CtcpTimeResponseReceivedEventArgs(message.Source, dateTime));
+                OnTimeResponseReceived(new(message.Source, dateTime));
             }
             else
             {
@@ -55,7 +55,7 @@ namespace IrcDotNet.Ctcp
             {
                 var versionInfo = message.Data;
 
-                OnVersionResponseReceived(new CtcpVersionResponseReceivedEventArgs(message.Source, versionInfo));
+                OnVersionResponseReceived(new(message.Source, versionInfo));
             }
             else
             {
@@ -82,7 +82,7 @@ namespace IrcDotNet.Ctcp
                 var failedQuery = parts.Item1;
                 var errorMessage = parts.Item2;
 
-                OnErrorMessageResponseReceived(new CtcpErrorMessageReceivedEventArgs(message.Source,
+                OnErrorMessageResponseReceived(new(message.Source,
                     failedQuery, errorMessage));
             }
             else
@@ -106,7 +106,7 @@ namespace IrcDotNet.Ctcp
                 var sendTime = new DateTime(long.Parse(message.Data));
                 var pingTime = DateTime.Now - sendTime;
 
-                OnPingResponseReceived(new CtcpPingResponseReceivedEventArgs(message.Source, pingTime));
+                OnPingResponseReceived(new(message.Source, pingTime));
             }
             else
             {

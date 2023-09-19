@@ -26,7 +26,7 @@ namespace IrcDotNet.Collections
         // Set to expose as read-only.
         private ISet<T> set;
 
-        private object syncRoot = new object();
+        private object syncRoot = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReadOnlySet{T}"/> class.

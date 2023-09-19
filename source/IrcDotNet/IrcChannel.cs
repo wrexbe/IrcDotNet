@@ -34,10 +34,10 @@ namespace IrcDotNet
         {
             Name = name;
             type = IrcChannelType.Unspecified;
-            modes = new HashSet<char>();
-            Modes = new ReadOnlySet<char>(modes);
-            users = new Collection<IrcChannelUser>();
-            Users = new IrcChannelUserCollection(this, users);
+            modes = new();
+            Modes = new(modes);
+            users = new();
+            Users = new(this, users);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace IrcDotNet
             private set
             {
                 type = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Type"));
+                OnPropertyChanged(new("Type"));
             }
         }
 
@@ -70,7 +70,7 @@ namespace IrcDotNet
             private set
             {
                 topic = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Topic"));
+                OnPropertyChanged(new("Topic"));
             }
         }
 
@@ -96,7 +96,7 @@ namespace IrcDotNet
             internal set
             {
                 client = value;
-                OnPropertyChanged(new PropertyChangedEventArgs("Client"));
+                OnPropertyChanged(new("Client"));
             }
         }
 
@@ -349,14 +349,14 @@ namespace IrcDotNet
 
         internal void HandleUsersListReceived()
         {
-            OnUsersListReceived(new EventArgs());
+            OnUsersListReceived(new());
         }
 
         internal void HandleTopicChanged(IrcMessage ircMessage, IrcUser source, string newTopic)
         {
             Topic = newTopic;
 
-            OnTopicChanged(new IrcUserEventArgs(ircMessage, source));
+            OnTopicChanged(new(ircMessage, source));
         }
 
         internal void HandleModesChanged(IrcMessage ircMessage, IrcUser source, string newModes, IEnumerable<string> newModeParameters)
@@ -366,7 +366,7 @@ namespace IrcDotNet
                     (add, mode, modeParameter) => users.Single(
                         cu => cu.User.NickName == modeParameter).HandleModeChanged(add, mode));
 
-            OnModesChanged(new IrcUserEventArgs(ircMessage, source));
+            OnModesChanged(new(ircMessage, source));
         }
 
         internal void HandleUserJoined(IrcMessage ircMessage, IrcChannelUser channelUser)
@@ -388,7 +388,7 @@ namespace IrcDotNet
             lock (((ICollection) Users).SyncRoot)
                 users.Add(channelUser);
 
-            OnUserJoined(new IrcChannelUserEventArgs(ircMessage, channelUser, null));
+            OnUserJoined(new(ircMessage, channelUser, null));
         }
 
         internal void HandleUserLeft(IrcMessage ircMessage, IrcUser user, string comment)
@@ -402,7 +402,7 @@ namespace IrcDotNet
             lock (((ICollection) Users).SyncRoot)
                 users.Remove(channelUser);
 
-            OnUserLeft(new IrcChannelUserEventArgs(ircMessage, channelUser, comment));
+            OnUserLeft(new(ircMessage, channelUser, comment));
         }
 
         internal void HandleUserKicked(IrcMessage ircMessage, IrcUser user, string comment)
@@ -416,13 +416,13 @@ namespace IrcDotNet
             lock (((ICollection) Users).SyncRoot)
                 users.Remove(channelUser);
 
-            OnUserKicked(new IrcChannelUserEventArgs(ircMessage, channelUser, comment));
+            OnUserKicked(new(ircMessage, channelUser, comment));
         }
 
         internal void HandleUserInvited(IrcMessage ircMessage, IrcUser user)
         {
             lock (((ICollection) Modes).SyncRoot)
-                OnUserInvited(new IrcUserEventArgs(ircMessage, user));
+                OnUserInvited(new(ircMessage, user));
         }
 
         internal void HandleUserQuit(IrcChannelUser channelUser, string comment)
@@ -436,7 +436,7 @@ namespace IrcDotNet
             var previewEventArgs = new IrcPreviewMessageEventArgs(ircMessage, source, targets, text, Client.TextEncoding);
             OnPreviewMessageReceived(previewEventArgs);
             if (!previewEventArgs.Handled)
-                OnMessageReceived(new IrcMessageEventArgs(ircMessage, source, targets, text, Client.TextEncoding));
+                OnMessageReceived(new(ircMessage, source, targets, text, Client.TextEncoding));
         }
 
         internal void HandleNoticeReceived(IrcMessage ircMessage, IIrcMessageSource source, IList<IIrcMessageTarget> targets, string text)
@@ -444,7 +444,7 @@ namespace IrcDotNet
             var previewEventArgs = new IrcPreviewMessageEventArgs(ircMessage, source, targets, text, Client.TextEncoding);
             OnPreviewNoticeReceived(previewEventArgs);
             if (!previewEventArgs.Handled)
-                OnNoticeReceived(new IrcMessageEventArgs(ircMessage, source, targets, text, Client.TextEncoding));
+                OnNoticeReceived(new(ircMessage, source, targets, text, Client.TextEncoding));
         }
 
         /// <summary>
@@ -454,8 +454,7 @@ namespace IrcDotNet
         protected virtual void OnUsersListReceived(EventArgs e)
         {
             var handler = UsersListReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -465,8 +464,7 @@ namespace IrcDotNet
         protected virtual void OnModesChanged(IrcUserEventArgs e)
         {
             var handler = ModesChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -476,8 +474,7 @@ namespace IrcDotNet
         protected virtual void OnTopicChanged(IrcUserEventArgs e)
         {
             var handler = TopicChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -487,8 +484,7 @@ namespace IrcDotNet
         protected virtual void OnUserJoined(IrcChannelUserEventArgs e)
         {
             var handler = UserJoined;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -498,8 +494,7 @@ namespace IrcDotNet
         protected virtual void OnUserLeft(IrcChannelUserEventArgs e)
         {
             var handler = UserLeft;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -509,8 +504,7 @@ namespace IrcDotNet
         protected virtual void OnUserKicked(IrcChannelUserEventArgs e)
         {
             var handler = UserKicked;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -520,8 +514,7 @@ namespace IrcDotNet
         protected virtual void OnUserInvited(IrcUserEventArgs e)
         {
             var handler = UserInvited;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -531,8 +524,7 @@ namespace IrcDotNet
         protected virtual void OnMessageReceived(IrcMessageEventArgs e)
         {
             var handler = MessageReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -542,8 +534,7 @@ namespace IrcDotNet
         protected virtual void OnPreviewMessageReceived(IrcPreviewMessageEventArgs e)
         {
             var handler = PreviewMessageReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -553,8 +544,7 @@ namespace IrcDotNet
         protected virtual void OnNoticeReceived(IrcMessageEventArgs e)
         {
             var handler = NoticeReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -564,8 +554,7 @@ namespace IrcDotNet
         protected virtual void OnPreviewNoticeReceived(IrcPreviewMessageEventArgs e)
         {
             var handler = PreviewNoticeReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -575,8 +564,7 @@ namespace IrcDotNet
         protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             var handler = PropertyChanged;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>

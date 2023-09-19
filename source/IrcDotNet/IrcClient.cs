@@ -80,9 +80,9 @@ namespace IrcDotNet
         public IrcClient()
         {
             TextEncoding = Encoding.UTF8;
-            messageProcessors = new Dictionary<string, MessageProcessor>(
+            messageProcessors = new(
                 StringComparer.OrdinalIgnoreCase);
-            numericMessageProcessors = new Dictionary<int, MessageProcessor>(1000);
+            numericMessageProcessors = new(1000);
             FloodPreventer = null;
 
             InitializeMessageProcessors();
@@ -731,7 +731,7 @@ namespace IrcDotNet
             if (message == null)
                 throw new ArgumentNullException("message");
 
-            var token = new IrcRawMessageEventArgs(new IrcMessage(), message);
+            var token = new IrcRawMessageEventArgs(new(), message);
 
             WriteMessage(message, token);
         }
@@ -764,7 +764,7 @@ namespace IrcDotNet
         protected void HandleStatsEntryReceived(int type, IrcMessage message)
         {
             // Add statistical entry to temporary list.
-            listedStatsEntries.Add(new IrcServerStatisticalEntry
+            listedStatsEntries.Add(new()
             {
                 Type = type,
                 Parameters = message.Parameters.Skip(1).ToArray()
@@ -1080,7 +1080,7 @@ namespace IrcDotNet
             var server = servers.SingleOrDefault(s => s.HostName == hostName);
             if (server == null)
             {
-                server = new IrcServer(hostName);
+                server = new(hostName);
                 servers.Add(server);
 
                 createdNew = true;
@@ -1121,7 +1121,7 @@ namespace IrcDotNet
                 var channel = channels.SingleOrDefault(c => c.Name == channelName);
                 if (channel == null)
                 {
-                    channel = new IrcChannel(channelName);
+                    channel = new(channelName);
                     channel.Client = this;
                     channels.Add(channel);
                     createdNew = true;
@@ -1170,7 +1170,7 @@ namespace IrcDotNet
                 user = users.SingleOrDefault(u => u.NickName == nickName);
                 if (user == null)
                 {
-                    user = new IrcUser
+                    user = new()
                     {
                         Client = this,
                         NickName = nickName
@@ -1216,7 +1216,7 @@ namespace IrcDotNet
                 var user = users.SingleOrDefault(u => u.UserName == userName);
                 if (user == null)
                 {
-                    user = new IrcUser();
+                    user = new();
                     user.Client = this;
                     user.UserName = userName;
                     users.Add(user);
@@ -1247,33 +1247,33 @@ namespace IrcDotNet
         protected virtual void ResetState()
         {
             // Reset fully state of client.
-            servers = new Collection<IrcServer>();
+            servers = new();
             isRegistered = false;
             localUser = null;
-            serverSupportedFeatures = new Dictionary<string, string>();
-            ServerSupportedFeatures = new Collections.ReadOnlyDictionary<string, string>(serverSupportedFeatures);
-            serverCapabilities = new List<string>();
-            ServerCapabilities = new ReadOnlyCollection<string>(serverCapabilities);
-            channelUserModes = new Collection<char>
+            serverSupportedFeatures = new();
+            ServerSupportedFeatures = new(serverSupportedFeatures);
+            serverCapabilities = new();
+            ServerCapabilities = new(serverCapabilities);
+            channelUserModes = new()
             {
                 'o',
                 'v'
             };
-            ChannelUserModes = new ReadOnlyCollection<char>(channelUserModes);
-            channelUserModesPrefixes = new Dictionary<char, char>
+            ChannelUserModes = new(channelUserModes);
+            channelUserModesPrefixes = new()
             {
                 {'@', 'o'},
                 {'+', 'v'}
             };
-            motdBuilder = new StringBuilder();
-            networkInformation = new IrcNetworkInfo();
-            channels = new Collection<IrcChannel>();
-            Channels = new IrcChannelCollection(this, channels);
-            users = new Collection<IrcUser>();
-            Users = new IrcUserCollection(this, users);
-            listedChannels = new List<IrcChannelInfo>();
-            listedServerLinks = new List<IrcServerInfo>();
-            listedStatsEntries = new List<IrcServerStatisticalEntry>();
+            motdBuilder = new();
+            networkInformation = new();
+            channels = new();
+            Channels = new(this, channels);
+            users = new();
+            Users = new(this, users);
+            listedChannels = new();
+            listedServerLinks = new();
+            listedStatsEntries = new();
         }
 
         protected void InitializeMessageProcessors()
@@ -1639,7 +1639,7 @@ namespace IrcDotNet
                 SendMessageService(serviceRegInfo.NickName, serviceRegInfo.Distribution,
                     serviceRegInfo.Description);
 
-                localUser = new IrcLocalUser(serviceRegInfo.NickName, serviceRegInfo.Distribution,
+                localUser = new(serviceRegInfo.NickName, serviceRegInfo.Distribution,
                     serviceRegInfo.Description);
             }
             else
@@ -1650,7 +1650,7 @@ namespace IrcDotNet
                 SendMessageUser(userRegInfo.UserName, GetNumericUserMode(userRegInfo.UserModes),
                     userRegInfo.RealName);
 
-                localUser = new IrcLocalUser(userRegInfo.NickName, userRegInfo.UserName, userRegInfo.RealName,
+                localUser = new(userRegInfo.NickName, userRegInfo.UserName, userRegInfo.RealName,
                     userRegInfo.UserModes);
             }
             localUser.Client = this;
@@ -1661,12 +1661,12 @@ namespace IrcDotNet
 
             SendMessageCapList();
 
-            OnConnected(new EventArgs());
+            OnConnected(new());
         }
 
         protected virtual void HandleClientDisconnected()
         {
-            OnDisconnected(new EventArgs());
+            OnDisconnected(new());
         }
 
         /// <summary>
@@ -1676,8 +1676,7 @@ namespace IrcDotNet
         protected virtual void OnConnected(EventArgs e)
         {
             var handler = Connected;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1687,8 +1686,7 @@ namespace IrcDotNet
         protected virtual void OnConnectFailed(IrcErrorEventArgs e)
         {
             var handler = ConnectFailed;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1698,8 +1696,7 @@ namespace IrcDotNet
         protected virtual void OnDisconnected(EventArgs e)
         {
             var handler = Disconnected;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1709,8 +1706,7 @@ namespace IrcDotNet
         protected virtual void OnError(IrcErrorEventArgs e)
         {
             var handler = Error;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
 #if !SILVERLIGHT
@@ -1724,8 +1720,7 @@ namespace IrcDotNet
         protected virtual void OnValidateSslCertificate(IrcValidateSslCertificateEventArgs e)
         {
             var handler = ValidateSslCertificate;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
 #endif
@@ -1737,8 +1732,7 @@ namespace IrcDotNet
         protected virtual void OnRawMessageSent(IrcRawMessageEventArgs e)
         {
             var handler = RawMessageSent;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1748,8 +1742,7 @@ namespace IrcDotNet
         protected virtual void OnRawMessageReceived(IrcRawMessageEventArgs e)
         {
             var handler = RawMessageReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1759,8 +1752,7 @@ namespace IrcDotNet
         protected virtual void OnProtocolError(IrcProtocolErrorEventArgs e)
         {
             var handler = ProtocolError;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1770,8 +1762,7 @@ namespace IrcDotNet
         protected virtual void OnErrorMessageReceived(IrcErrorMessageEventArgs e)
         {
             var handler = ErrorMessageReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1807,8 +1798,7 @@ namespace IrcDotNet
         protected virtual void OnClientInfoReceived(EventArgs e)
         {
             var handler = ClientInfoReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1818,8 +1808,7 @@ namespace IrcDotNet
         protected virtual void OnRegistered(EventArgs e)
         {
             var handler = Registered;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1829,8 +1818,7 @@ namespace IrcDotNet
         protected virtual void OnServerBounce(IrcServerInfoEventArgs e)
         {
             var handler = ServerBounce;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1840,8 +1828,7 @@ namespace IrcDotNet
         protected virtual void OnServerSupportedFeaturesReceived(EventArgs e)
         {
             var handler = ServerSupportedFeaturesReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1851,8 +1838,7 @@ namespace IrcDotNet
         protected virtual void OnPingReceived(IrcPingOrPongReceivedEventArgs e)
         {
             var handler = PingReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1862,8 +1848,7 @@ namespace IrcDotNet
         protected virtual void OnPongReceived(IrcPingOrPongReceivedEventArgs e)
         {
             var handler = PongReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1873,8 +1858,7 @@ namespace IrcDotNet
         protected virtual void OnMotdReceived(EventArgs e)
         {
             var handler = MotdReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1884,8 +1868,7 @@ namespace IrcDotNet
         protected virtual void OnNetworkInformationReceived(IrcCommentEventArgs e)
         {
             var handler = NetworkInformationReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1895,8 +1878,7 @@ namespace IrcDotNet
         protected virtual void OnServerVersionInfoReceived(IrcServerVersionInfoEventArgs e)
         {
             var handler = ServerVersionInfoReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1906,8 +1888,7 @@ namespace IrcDotNet
         protected virtual void OnServerTimeReceived(IrcServerTimeEventArgs e)
         {
             var handler = ServerTimeReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1919,8 +1900,7 @@ namespace IrcDotNet
         protected virtual void OnServerLinksListReceived(IrcServerLinksListReceivedEventArgs e)
         {
             var handler = ServerLinksListReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1932,8 +1912,7 @@ namespace IrcDotNet
         protected virtual void OnServerStatsReceived(IrcServerStatsReceivedEventArgs e)
         {
             var handler = ServerStatsReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1943,8 +1922,7 @@ namespace IrcDotNet
         protected virtual void OnWhoReplyReceived(IrcNameEventArgs e)
         {
             var handler = WhoReplyReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1954,8 +1932,7 @@ namespace IrcDotNet
         protected virtual void OnWhoXReplyReceived(IrcRawMessageEventArgs e)
         {
             var handler = WhoXReplyReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1965,8 +1942,7 @@ namespace IrcDotNet
         protected virtual void OnWhoIsReplyReceived(IrcUserEventArgs e)
         {
             var handler = WhoIsReplyReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1976,8 +1952,7 @@ namespace IrcDotNet
         protected virtual void OnWhoWasReplyReceived(IrcUserEventArgs e)
         {
             var handler = WhoWasReplyReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
         /// <summary>
@@ -1989,8 +1964,7 @@ namespace IrcDotNet
         protected virtual void OnChannelListReceived(IrcChannelListReceivedEventArgs e)
         {
             var handler = ChannelListReceived;
-            if (handler != null)
-                handler(this, e);
+            handler?.Invoke(this, e);
         }
 
 		/// <summary>
@@ -2000,9 +1974,8 @@ namespace IrcDotNet
 		protected virtual void OnNickChanged(IrcNickChangedEventArgs e)
 		{
 			var handler = NickChanged;
-			if (handler != null)
-				handler(this, e);
-		}
+            handler?.Invoke(this, e);
+        }
 
 		protected void CheckDisposed()
         {

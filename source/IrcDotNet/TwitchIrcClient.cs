@@ -16,7 +16,7 @@ namespace IrcDotNet
         protected override void WriteMessage(string message, object token = null)
         {
             base.WriteMessage(message,
-                token ?? new IrcRawMessageEventArgs(new IrcMessage(this, null, null, null), message));
+                token ?? new IrcRawMessageEventArgs(new(this, null, null, null), message));
         }
 
         protected override void OnChannelModeChanged(IrcMessage ircMessage, IrcChannel channel, IrcUser source,
@@ -28,7 +28,7 @@ namespace IrcDotNet
             {
                 var user = GetUserFromNickName(username);
                 if (channel.GetChannelUser(user) == null)
-                    channel.HandleUserJoined(ircMessage, new IrcChannelUser(user));
+                    channel.HandleUserJoined(ircMessage, new(user));
             }
         }
 
@@ -41,7 +41,7 @@ namespace IrcDotNet
 
             // Twitch does not send a normal welcome message, so this code is actually incorrect.
             isRegistered = true;
-            OnRegistered(new EventArgs());
+            OnRegistered(new());
         }
 
         protected internal override void ProcessMessageReplyMyInfo(IrcMessage message)
@@ -50,7 +50,7 @@ namespace IrcDotNet
 
             // Twitch doesn't seem to give us this information.
             Debug.Assert(message.Parameters[1] == "-");
-            OnClientInfoReceived(new EventArgs());
+            OnClientInfoReceived(new());
         }
 
         protected internal override void ProcessMessageReplyMotdStart(IrcMessage message)

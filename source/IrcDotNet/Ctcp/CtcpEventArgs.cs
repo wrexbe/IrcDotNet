@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Collections.Immutable;
 
 namespace IrcDotNet.Ctcp
 {
@@ -18,16 +18,11 @@ namespace IrcDotNet.Ctcp
         /// <param name="text">The text of the message.</param>
         /// <exception cref="ArgumentNullException"><paramref name="targets" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="text" /> is <see langword="null" />.</exception>
-        public CtcpMessageEventArgs(IrcUser source, IList<IIrcMessageTarget> targets, string text)
+        public CtcpMessageEventArgs(IrcUser source, IEnumerable<IIrcMessageTarget> targets, string text)
         {
-            if (targets == null)
-                throw new ArgumentNullException("target");
-            if (text == null)
-                throw new ArgumentNullException("text");
-
             Source = source;
-            Targets = new ReadOnlyCollection<IIrcMessageTarget>(targets);
-            Text = text;
+            Targets = targets?.ToImmutableList() ?? throw new ArgumentNullException(nameof(targets));
+            Text = text ?? throw new ArgumentNullException(nameof(text));
         }
 
         /// <summary>

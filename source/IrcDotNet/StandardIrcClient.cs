@@ -37,12 +37,12 @@ namespace IrcDotNet
 
         public StandardIrcClient()
         {
-            socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            sendTimer = new Timer(WritePendingMessages, null,
+            socket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            sendTimer = new(WritePendingMessages, null,
                 Timeout.Infinite, Timeout.Infinite);
-            disconnectedEvent = new AutoResetEvent(false);
+            disconnectedEvent = new(false);
 
-            messageSendQueue = new Queue<Tuple<string, object>>();
+            messageSendQueue = new();
         }
 
         public override bool IsConnected
@@ -222,10 +222,8 @@ namespace IrcDotNet
             base.ResetState();
 
             // Reset network I/O objects.
-            if (receiveStream != null)
-                receiveStream.Dispose();
-            if (dataStream != null)
-                dataStream.Dispose();
+            receiveStream?.Dispose();
+            dataStream?.Dispose();
             if (dataStreamReader != null)
                 dataStreamReader = null;
         }
@@ -256,8 +254,7 @@ namespace IrcDotNet
                     SendAsync(lineBuffer, token);
 
                     // Tell flood preventer mechanism that message has just been sent.
-                    if (FloodPreventer != null)
-                        FloodPreventer.HandleMessageSent();
+                    FloodPreventer?.HandleMessageSent();
                 }
 
                 // Make timer fire when next message in send queue should be written.
@@ -437,14 +434,14 @@ namespace IrcDotNet
                 var token = (Tuple<bool, string, IrcRegistrationInfo>) e.UserToken;
 
                 // Create stream for received data. Use SSL stream on top of network stream, if specified.
-                receiveStream = new CircularBufferStream(socketReceiveBufferSize);
+                receiveStream = new(socketReceiveBufferSize);
 #if SILVERLIGHT
                 this.dataStream = this.receiveStream;
 #else
                 dataStream = GetDataStream(token.Item1, token.Item2);
 #endif
-                dataStreamReader = new StreamReader(dataStream, TextEncoding);
-                dataStreamLineReader = new SafeLineReader(dataStreamReader);
+                dataStreamReader = new(dataStream, TextEncoding);
+                dataStreamLineReader = new(dataStreamReader);
 
                 // Start sending and receiving data to/from server.
                 sendTimer.Change(0, Timeout.Infinite);
@@ -560,7 +557,7 @@ namespace IrcDotNet
                     HandleClientDisconnected();
                     return;
                 default:
-                    OnError(new IrcErrorEventArgs(exception));
+                    OnError(new(exception));
                     return;
             }
         }

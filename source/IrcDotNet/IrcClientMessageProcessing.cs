@@ -31,7 +31,7 @@ namespace IrcDotNet
             var oldNickName = sourceUser.NickName;
             var newNickName = message.Parameters[0];
             sourceUser.NickName = newNickName;
-            OnNickChanged(new IrcNickChangedEventArgs(message, newNickName, oldNickName));
+            OnNickChanged(new(message, newNickName, oldNickName));
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace IrcDotNet
             if (sourceUser == localUser)
                 chans.ForEach(c => localUser.HandleJoinedChannel(message, c));
             else
-                chans.ForEach(c => c.HandleUserJoined(message, new IrcChannelUser(sourceUser)));
+                chans.ForEach(c => c.HandleUserJoined(message, new(sourceUser)));
         }
 
         /// <summary>
@@ -244,8 +244,7 @@ namespace IrcDotNet
             {
                 Debug.Assert(curTarget != null);
                 var messageHandler = curTarget as IIrcMessageReceiveHandler ?? localUser;
-                if (messageHandler != null)
-                    messageHandler.HandleNoticeReceived(message, message.Source, targets, text);
+                messageHandler?.HandleNoticeReceived(message, message.Source, targets, text);
             }
         }
 
@@ -282,7 +281,7 @@ namespace IrcDotNet
         {
             Debug.Assert(message.Parameters[0] != null);
             var server = message.Parameters[0];
-            OnPongReceived(new IrcPingOrPongReceivedEventArgs(message, server));
+            OnPongReceived(new(message, server));
         }
 
         /// <summary>
@@ -294,7 +293,7 @@ namespace IrcDotNet
         {
             Debug.Assert(message.Parameters[0] != null);
             var errorMessage = message.Parameters[0];
-            OnErrorMessageReceived(new IrcErrorMessageEventArgs(message, errorMessage));
+            OnErrorMessageReceived(new(message, errorMessage));
         }
 
         /// <summary>
@@ -316,20 +315,20 @@ namespace IrcDotNet
                     serverCapabilities.Clear();
                     serverCapabilities.AddRange(caps);
 
-                    OnServerCapabilitiesReceived(new EventArgs());
+                    OnServerCapabilitiesReceived(new());
                     break;
                 case "LIST":
                     string[] active = message.Parameters[2]?.Split(' ');
-                    OnActiveCapabilitiesReceived(new ActiveCapabilitiesEventArgs(active));
+                    OnActiveCapabilitiesReceived(new(active));
                     break;
                 case "ACK":
                     string[] ackd = message.Parameters[2]?.Split(' ');
-                    OnCapabilityAcknowledged(new CapabilityAcknowledgedEventArgs(true, ackd));
+                    OnCapabilityAcknowledged(new(true, ackd));
                     SendMessageCapEnd();
                     break;
                 case "NACK":
                     string[] nakd = message.Parameters[2]?.Split(' ');
-                    OnCapabilityAcknowledged(new CapabilityAcknowledgedEventArgs(false, nakd));
+                    OnCapabilityAcknowledged(new(false, nakd));
                     SendMessageCapEnd();
                     break;
             }
@@ -354,7 +353,7 @@ namespace IrcDotNet
             localUser.HostName = nickNameIdMatch.Groups["host"].GetValue() ?? localUser.HostName;
 
             isRegistered = true;
-            OnRegistered(new EventArgs());
+            OnRegistered(new());
         }
 
         /// <summary>
@@ -402,7 +401,7 @@ namespace IrcDotNet
             ServerAvailableChannelModes = message.Parameters[4];
 
             // All initial information about client has now been received.
-            OnClientInfoReceived(new EventArgs());
+            OnClientInfoReceived(new());
         }
 
         /// <summary>
@@ -424,7 +423,7 @@ namespace IrcDotNet
                 var serverAddress = textParts[2];
                 var serverPort = int.Parse(textParts[6]);
 
-                OnServerBounce(new IrcServerInfoEventArgs(message, serverAddress, serverPort));
+                OnServerBounce(new(message, serverAddress, serverPort));
             }
             else
             {
@@ -442,7 +441,7 @@ namespace IrcDotNet
                     serverSupportedFeatures.Set(paramName, paramValue);
                 }
 
-                OnServerSupportedFeaturesReceived(new EventArgs());
+                OnServerSupportedFeaturesReceived(new());
             }
         }
 
@@ -539,8 +538,8 @@ namespace IrcDotNet
         {
             Debug.Assert(message.Parameters[0] == localUser.NickName);
 
-            OnServerStatsReceived(new IrcServerStatsReceivedEventArgs(message, listedStatsEntries));
-            listedStatsEntries = new List<IrcServerStatisticalEntry>();
+            OnServerStatsReceived(new(message, listedStatsEntries));
+            listedStatsEntries = new();
         }
 
         /// <summary>
@@ -609,7 +608,7 @@ namespace IrcDotNet
             networkInformation.InvisibleUsersCount = int.Parse(infoParts[5]);
             networkInformation.ServersCount = int.Parse(infoParts[8]);
 
-            OnNetworkInformationReceived(new IrcCommentEventArgs(message, info));
+            OnNetworkInformationReceived(new(message, info));
         }
 
         /// <summary>
@@ -626,7 +625,7 @@ namespace IrcDotNet
             var info = message.Parameters[1];
             networkInformation.OperatorsCount = int.Parse(info);
 
-            OnNetworkInformationReceived(new IrcCommentEventArgs(message, info));
+            OnNetworkInformationReceived(new(message, info));
         }
 
         /// <summary>
@@ -643,7 +642,7 @@ namespace IrcDotNet
             var info = message.Parameters[1];
             networkInformation.UnknownConnectionsCount = int.Parse(info);
 
-            OnNetworkInformationReceived(new IrcCommentEventArgs(message, info));
+            OnNetworkInformationReceived(new(message, info));
         }
 
         /// <summary>
@@ -660,7 +659,7 @@ namespace IrcDotNet
             var info = message.Parameters[1];
             networkInformation.ChannelsCount = int.Parse(info);
 
-            OnNetworkInformationReceived(new IrcCommentEventArgs(message, info));
+            OnNetworkInformationReceived(new(message, info));
         }
 
         /// <summary>
@@ -695,7 +694,7 @@ namespace IrcDotNet
                 }
             }
 
-            OnNetworkInformationReceived(new IrcCommentEventArgs(message, info));
+            OnNetworkInformationReceived(new(message, info));
         }
 
         /// <summary>
@@ -835,7 +834,7 @@ namespace IrcDotNet
 
             Debug.Assert(message.Parameters[1] != null);
             var mask = message.Parameters[1];
-            OnWhoReplyReceived(new IrcNameEventArgs(message, mask));
+            OnWhoReplyReceived(new(message, mask));
         }
 
         /// <summary>
@@ -864,7 +863,7 @@ namespace IrcDotNet
 
             Debug.Assert(message.Parameters[1] != null);
             var user = GetUserFromNickName(message.Parameters[1]);
-            OnWhoIsReplyReceived(new IrcUserEventArgs(message, user, null));
+            OnWhoIsReplyReceived(new(message, user, null));
         }
 
         /// <summary>
@@ -889,7 +888,7 @@ namespace IrcDotNet
                 var channelNameAndUserMode = GetUserModeAndNickName(channelId);
                 var channel = GetChannelFromName(channelNameAndUserMode.Item1);
                 if (channel.GetChannelUser(user) == null)
-                    channel.HandleUserJoined(message, new IrcChannelUser(user, channelNameAndUserMode.Item2));
+                    channel.HandleUserJoined(message, new(user, channelNameAndUserMode.Item2));
             }
         }
 
@@ -910,7 +909,7 @@ namespace IrcDotNet
             var topic = message.Parameters[3];
 
             // Add channel information to temporary list.
-            listedChannels.Add(new IrcChannelInfo(channelName, visibleUsersCount, topic));
+            listedChannels.Add(new(channelName, visibleUsersCount, topic));
         }
 
         /// <summary>
@@ -922,8 +921,8 @@ namespace IrcDotNet
         {
             Debug.Assert(message.Parameters[0] == localUser.NickName);
 
-            OnChannelListReceived(new IrcChannelListReceivedEventArgs(message, listedChannels));
-            listedChannels = new List<IrcChannelInfo>();
+            OnChannelListReceived(new(message, listedChannels));
+            listedChannels = new();
         }
 
         /// <summary>
@@ -991,7 +990,7 @@ namespace IrcDotNet
             Debug.Assert(message.Parameters[3] != null);
             var comments = message.Parameters[3];
 
-            OnServerVersionInfoReceived(new IrcServerVersionInfoEventArgs(message, version, debugLevel, server, comments));
+            OnServerVersionInfoReceived(new(message, version, debugLevel, server, comments));
         }
 
         /// <summary>
@@ -1030,7 +1029,7 @@ namespace IrcDotNet
                 var channelUser = channel.GetChannelUser(user);
                 if (channelUser == null)
                 {
-                    channelUser = new IrcChannelUser(user);
+                    channelUser = new(user);
                     channel.HandleUserJoined(message, channelUser);
                 }
 
@@ -1078,7 +1077,7 @@ namespace IrcDotNet
                     // Find user by nick name and add it to collection of channel users.
                     var userNickNameAndMode = GetUserModeAndNickName(userId);
                     var user = GetUserFromNickName(userNickNameAndMode.Item1);
-                    channel.HandleUserNameReply(new IrcChannelUser(user, userNickNameAndMode.Item2));
+                    channel.HandleUserNameReply(new(user, userNickNameAndMode.Item2));
                 }
             }
         }
@@ -1092,7 +1091,7 @@ namespace IrcDotNet
         {
             Debug.Assert(message.Parameters[0] == localUser.NickName);
 
-            OnWhoXReplyReceived(new IrcRawMessageEventArgs(message, message.Parameters[1]));
+            OnWhoXReplyReceived(new(message, message.Parameters[1]));
         }
 
         /// <summary>
@@ -1116,7 +1115,7 @@ namespace IrcDotNet
             var info = infoParts.Item2;
 
             // Add server information to temporary list.
-            listedServerLinks.Add(new IrcServerInfo(hostName, hopCount, info));
+            listedServerLinks.Add(new(hostName, hopCount, info));
         }
 
         /// <summary>
@@ -1131,8 +1130,8 @@ namespace IrcDotNet
             Debug.Assert(message.Parameters[1] != null);
             var mask = message.Parameters[1];
 
-            OnServerLinksListReceived(new IrcServerLinksListReceivedEventArgs(message, listedServerLinks));
-            listedServerLinks = new List<IrcServerInfo>();
+            OnServerLinksListReceived(new(message, listedServerLinks));
+            listedServerLinks = new();
         }
 
         /// <summary>
@@ -1160,7 +1159,7 @@ namespace IrcDotNet
 
             Debug.Assert(message.Parameters[1] != null);
             var user = GetUserFromNickName(message.Parameters[1], false);
-            OnWhoWasReplyReceived(new IrcUserEventArgs(message, user, null));
+            OnWhoWasReplyReceived(new(message, user, null));
         }
 
         /// <summary>
@@ -1202,7 +1201,7 @@ namespace IrcDotNet
             Debug.Assert(message.Parameters[1] != null);
             motdBuilder.AppendLine(message.Parameters[1]);
 
-            OnMotdReceived(new EventArgs());
+            OnMotdReceived(new());
         }
 
         /// <summary>
@@ -1218,7 +1217,7 @@ namespace IrcDotNet
             localUser.NickName = message.Parameters[1].Split(' ')[3];
 
             isRegistered = true;
-            OnRegistered(new EventArgs());
+            OnRegistered(new());
         }
 
         /// <summary>
@@ -1235,7 +1234,7 @@ namespace IrcDotNet
             Debug.Assert(message.Parameters[2] != null);
             var dateTime = message.Parameters[2];
 
-            OnServerTimeReceived(new IrcServerTimeEventArgs(message, server, dateTime));
+            OnServerTimeReceived(new(message, server, dateTime));
         }
 
         /// <summary>
@@ -1262,7 +1261,7 @@ namespace IrcDotNet
             }
 
             Debug.Assert(errorMessage != null);
-            OnProtocolError(new IrcProtocolErrorEventArgs(message, int.Parse(message.Command), errorParameters,
+            OnProtocolError(new(message, int.Parse(message.Command), errorParameters,
                 errorMessage));
         }
     }

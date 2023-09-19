@@ -10,11 +10,11 @@ namespace IrcDotNet.Ctcp
         /// </summary>
         /// <param name="targets">A list of the targets of the message.</param>
         /// <param name="text">The message text.</param>
-        protected void SendMessageAction(IList<IIrcMessageTarget> targets, string text)
+        protected void SendMessageAction(IEnumerable<IIrcMessageTarget> targets, string text)
         {
             WriteMessage(targets, "action", text);
 
-            OnActionSent(new CtcpMessageEventArgs(IrcClient.LocalUser, targets, text));
+            OnActionSent(new(IrcClient.LocalUser, targets, text));
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace IrcDotNet.Ctcp
         ///     <see langword="true" /> if the message is a response; <see langword="false" />,
         ///     otherwise.
         /// </param>
-        protected void SendMessageTime(IList<IIrcMessageTarget> targets, string info, bool isResponse)
+        protected void SendMessageTime(IEnumerable<IIrcMessageTarget> targets, string info, bool isResponse)
         {
             WriteMessage(targets, "time", info, isResponse);
         }
@@ -40,7 +40,7 @@ namespace IrcDotNet.Ctcp
         ///     <see langword="true" /> if the message is a response; <see langword="false" />,
         ///     otherwise.
         /// </param>
-        protected void SendMessageVersion(IList<IIrcMessageTarget> targets, string info, bool isResponse)
+        protected void SendMessageVersion(IEnumerable<IIrcMessageTarget> targets, string info, bool isResponse)
         {
             WriteMessage(targets, "version", info, isResponse);
         }
@@ -54,7 +54,7 @@ namespace IrcDotNet.Ctcp
         ///     <see langword="true" /> if the message is a response; <see langword="false" />,
         ///     otherwise.
         /// </param>
-        protected void SendMessageErrMsg(IList<IIrcMessageTarget> targets, string tag, bool isResponse)
+        protected void SendMessageErrMsg(IEnumerable<IIrcMessageTarget> targets, string tag, bool isResponse)
         {
             WriteMessage(targets, "errmsg", tag, isResponse);
         }
@@ -68,7 +68,7 @@ namespace IrcDotNet.Ctcp
         ///     <see langword="true" /> if the message is a response; <see langword="false" />,
         ///     otherwise.
         /// </param>
-        protected void SendMessagePing(IList<IIrcMessageTarget> targets, string info, bool isResponse)
+        protected void SendMessagePing(IEnumerable<IIrcMessageTarget> targets, string info, bool isResponse)
         {
             WriteMessage(targets, "ping", info, isResponse);
         }
